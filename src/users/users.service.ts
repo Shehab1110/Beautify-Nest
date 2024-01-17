@@ -6,6 +6,10 @@ import { User, UserDocument } from './user.schema';
 export class UsersService {
   constructor(private readonly userRepository: UsersRepository) {}
 
+  async createUser(user: Partial<User>): Promise<UserDocument> {
+    return this.userRepository.createUser(user);
+  }
+
   async signUp(user: Partial<User>): Promise<UserDocument> {
     const newUser = this.userRepository.createUser(user);
     return newUser;

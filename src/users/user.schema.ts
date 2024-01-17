@@ -15,6 +15,9 @@ export class User extends Document {
   @Prop({ trim: true })
   passwordConfirm: string;
 
+  @Prop()
+  passwordChangedAt: Date;
+
   async checkPassword(candidatePassword: string): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
   }
