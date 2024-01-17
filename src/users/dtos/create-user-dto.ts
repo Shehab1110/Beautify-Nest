@@ -1,5 +1,5 @@
 import { IsAlphanumeric, IsEmail, Length } from 'class-validator';
-import { IsEqual } from '../custom-decorators';
+import { IsEqual } from '../../custom-decorators';
 export class CreateUserDto {
   @IsEmail()
   email: string;
