@@ -24,16 +24,6 @@ export class AllExceptionsFilter
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     if (!(exception instanceof HttpException)) {
-      switch (name) {
-        case 'JsonWebTokenError':
-          message = 'Invalid Token, please login again!';
-          statusCode = HttpStatus.UNAUTHORIZED;
-          break;
-        case 'TokenExpiredError':
-          message = 'Your token has expired, Please login again!';
-          statusCode = HttpStatus.UNAUTHORIZED;
-          break;
-      }
       if (exception.code === 11000) {
         message = `There is an existing email address: ${exception.keyValue.email}`;
         statusCode = HttpStatus.BAD_REQUEST;
