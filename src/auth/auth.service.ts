@@ -22,7 +22,9 @@ export class AuthService {
   }
 
   async signIn(user: Partial<User>): Promise<AuthenticatedUser> {
-    const foundUser = await this.usersRepository.findUserByEmail(user.email);
+    const foundUser = await this.usersRepository.findUserByEmail(user.email, [
+      'password',
+    ]);
     if (!foundUser || !(await foundUser.checkPassword(user.password)))
       throw new UnauthorizedException('Invalid email or password!');
     const token = await this.jwtService.signAsync({ userId: foundUser.id });

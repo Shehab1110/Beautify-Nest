@@ -13,11 +13,27 @@ export class UsersRepository {
     return this.userModel.create(user);
   }
 
-  async findUserByEmail(email: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ email });
+  async findUserByEmail(
+    email: string,
+    selectOpts?: string[],
+  ): Promise<UserDocument | null> {
+    const selectOptsStr = selectOpts
+      .map((val) => {
+        return (val = `+${val}`);
+      })
+      .join(' ');
+    return this.userModel.findOne({ email }).select(selectOptsStr);
   }
 
-  async findUserById(id: string): Promise<UserDocument | null> {
-    return this.userModel.findById(id);
+  async findUserById(
+    id: string,
+    selectOpts?: string[],
+  ): Promise<UserDocument | null> {
+    const selectOptsStr = selectOpts
+      .map((val) => {
+        return (val = `+${val}`);
+      })
+      .join(' ');
+    return this.userModel.findById(id, selectOptsStr);
   }
 }
