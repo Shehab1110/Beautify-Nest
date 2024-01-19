@@ -18,7 +18,7 @@ export class UsersRepository {
     selectOpts?: string[],
   ): Promise<UserDocument | null> {
     const selectOptsStr = selectOpts
-      .map((val) => {
+      ?.map((val) => {
         return (val = `+${val}`);
       })
       .join(' ');
@@ -30,7 +30,7 @@ export class UsersRepository {
     selectOpts?: string[],
   ): Promise<UserDocument | null> {
     const selectOptsStr = selectOpts
-      .map((val) => {
+      ?.map((val) => {
         return (val = `+${val}`);
       })
       .join(' ');

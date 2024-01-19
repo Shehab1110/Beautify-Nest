@@ -28,6 +28,7 @@ export class AuthService {
     if (!foundUser || !(await foundUser.checkPassword(user.password)))
       throw new UnauthorizedException('Invalid email or password!');
     const token = await this.jwtService.signAsync({ userId: foundUser.id });
-    return { user: foundUser, token };
+    const { password, ...userObj } = foundUser.toObject();
+    return { user: userObj, token };
   }
 }

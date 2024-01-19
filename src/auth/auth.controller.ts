@@ -13,6 +13,7 @@ import { AuthService, AuthenticatedUser } from './auth.service';
 import { SignInUserDto } from 'src/users/dtos/signin-user-dto';
 import { Request as ExpressRequest } from 'express';
 import { AuthGuard } from './auth.guard';
+import { Roles } from 'roles.decorator';
 
 interface Req extends ExpressRequest {
   user: any;

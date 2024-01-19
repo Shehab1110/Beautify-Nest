@@ -18,6 +18,9 @@ export class User extends Document {
   @Prop()
   passwordChangedAt: Date;
 
+  @Prop({ enum: ['customer', 'admin', 'seller'], default: 'customer' })
+  role: string;
+
   async checkPassword(candidatePassword: string): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
   }

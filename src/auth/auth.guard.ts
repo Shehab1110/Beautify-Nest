@@ -3,14 +3,18 @@ import {
   CanActivate,
   Injectable,
   UnauthorizedException,
+  HttpException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { Roles } from 'roles.decorator';
 import { UsersRepository } from 'src/users/users.repository';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
+    private reflector: Reflector,
     private jwtService: JwtService,
     private usersRepository: UsersRepository,
   ) {}
@@ -18,6 +22,10 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
+    const requiredRoles = this.reflector.getAllAndOverride(Roles, [
+      context.getClass(),
+      context.getHandler(),
+    ]);
     if (!token) throw new UnauthorizedException('Please login to get access!');
     try {
       const { userId } = await this.jwtService.verifyAsync(token);
@@ -26,10 +34,16 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException(
           'The user of this token does not exist anymore!',
         );
-      request['user'] = user;
-    } catch (error) {
-      console.log(error);
-      throw new UnauthorizedException('Malformed JWT!');
+      if (!requiredRoles || requiredRoles?.includes(user.role))
+        request['user'] = user;
+      else
+        throw new UnauthorizedException(
+          'You do not have permissions to perform such a request!',
+        );
+    } catch (err) {
+      console.log(err);
+      if (err instanceof HttpException) throw err;
+      else throw new UnauthorizedException('Malformed JWT!');
     }
     return true;
   }
