@@ -6,10 +6,19 @@ import * as bcrypt from 'bcrypt';
   timestamps: true,
 })
 export class User extends Document {
-  @Prop({ required: true, unique: true, trim: true })
+  @Prop({ required: true, trim: true })
+  name: string;
+
+  @Prop({ required: true, unique: true, trim: true, lowercase: true })
   email: string;
 
-  @Prop({ required: true, trim: true, select: false })
+  @Prop({
+    required: true,
+    trim: true,
+    select: false,
+    minlength: 8,
+    maxlength: 32,
+  })
   password: string;
 
   @Prop({ trim: true })
@@ -21,6 +30,24 @@ export class User extends Document {
   @Prop({ enum: ['customer', 'admin', 'seller'], default: 'customer' })
   role: string;
 
+  @Prop({ default: true, select: false })
+  active: boolean;
+
+  @Prop({
+    type: {
+      type: String,
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number],
+      default: [0, 0],
+    },
+  })
+  location: {
+    type: { type: String; default: 'Point' };
+    coordinates: [number, number];
+  };
+
   async checkPassword(candidatePassword: string): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
   }
@@ -29,6 +56,8 @@ export class User extends Document {
 export type UserDocument = User & Document;
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.index({ location: '2dsphere' });
 
 UserSchema.methods.checkPassword = async function (
   candidatePassword: string,
