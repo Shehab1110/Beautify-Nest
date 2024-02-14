@@ -8,3 +8,6 @@ export const User = createParamDecorator(
     return data ? user?.[data] : user;
   },
 );
+
+// * Note that validateCustomDecorators option must be set to true. ValidationPipe does not validate arguments annotated with the custom decorators by default.
+// * For example, you should use the User decorator as follows: @User(new ValidationPipe({ validateCustomDecorators: true })).
