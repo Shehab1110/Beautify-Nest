@@ -1,6 +1,7 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { Product, ProductDocument } from 'src/products/product.schema';
 
 @Schema({
   timestamps: true,
@@ -48,10 +49,39 @@ export class User extends Document {
     coordinates: [number, number];
   };
 
+  // @Prop({ default: [] })
+  // cartItems: CartItems;
+
   async checkPassword(candidatePassword: string): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
   }
+
+  // async addToMyCart(cartItem: CartItem) {
+  //   if (this.cartItems.length === 0) {
+  //     this.cartItems = [cartItem];
+  //     return await this.save();
+  //   }
+  //   const index = this.cartItems.findIndex(
+  //     (val) => val.product.id.toString() === cartItem.product.id.toString(),
+  //   );
+  //   if (index !== -1) {
+  //     this.cartItems[index].quantity += cartItem.quantity;
+  //     return await this.save();
+  //   }
+  //   this.cartItems.push(cartItem);
+  //   return await this.save();
+  // }
 }
+
+// export type CartItems = Array<{
+//   product: Partial<Product>;
+//   quantity: number;
+// }>;
+
+// export type CartItem = {
+//   product: Partial<Product>;
+//   quantity: number;
+// };
 
 export type UserDocument = User & Document;
 
@@ -65,6 +95,26 @@ UserSchema.methods.checkPassword = async function (
   this as UserDocument;
   return await bcrypt.compare(candidatePassword, this.password);
 };
+
+// UserSchema.methods.addToMyCart = async function (cartItem: CartItem) {
+//   if (this.cartItems.length === 0) {
+//     this.cartItems = [cartItem];
+//     return await this.save();
+//   }
+//   const index = this.cartItems.findIndex(
+//     (val: CartItem) =>
+//       val.product.id.toString() === cartItem.product.id.toString(),
+//   );
+//   console.log(index);
+//   console.log(this.cartItems[index].quantity);
+//   if (index !== -1) {
+//     this.cartItems[index].quantity += cartItem.quantity;
+//     console.log(this.cartItems[index].quantity);
+//     return await this.save();
+//   }
+//   this.cartItems.push(cartItem);
+//   return await this.save();
+// };
 
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

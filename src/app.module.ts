@@ -6,6 +6,9 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
+import { CartModule } from './cart/cart.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TimeOutInterceptor } from 'timeout.interceptor';
 
 @Module({
   imports: [
@@ -19,8 +22,15 @@ import { ProductsModule } from './products/products.module';
     }),
     AuthModule,
     ProductsModule,
+    CartModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TimeOutInterceptor,
+    },
+  ],
 })
 export class AppModule {}

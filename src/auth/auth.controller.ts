@@ -7,18 +7,21 @@ import {
   Request,
   Get,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dtos/create-user-dto';
 import { AuthService, AuthenticatedUser } from './auth.service';
 import { SignInUserDto } from 'src/users/dtos/signin-user-dto';
 import { Request as ExpressRequest } from 'express';
 import { AuthGuard } from './auth.guard';
+import { LoggingInterceptor } from 'logging.interceptor';
 
 interface Req extends ExpressRequest {
   user: any;
 }
 
 @Controller('auth')
+@UseInterceptors(LoggingInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
