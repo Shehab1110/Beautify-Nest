@@ -8,6 +8,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { Req } from 'request-interface';
 import { Roles } from 'src/roles.decorator';
 import { UsersRepository } from 'src/users/users.repository';
 
@@ -35,7 +36,7 @@ export class AuthGuard implements CanActivate {
           'The user of this token does not exist anymore!',
         );
       if (!requiredRoles || requiredRoles?.includes(user.role))
-        request['user'] = user;
+        (request as Req)['user'] = user;
       else
         throw new UnauthorizedException(
           'You do not have permissions to perform such a request!',
