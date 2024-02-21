@@ -9,6 +9,7 @@ import { ProductsModule } from './products/products.module';
 import { CartModule } from './cart/cart.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TimeOutInterceptor } from 'timeout.interceptor';
+import { LoggingInterceptor } from 'logging.interceptor';
 
 @Module({
   imports: [
@@ -30,6 +31,10 @@ import { TimeOutInterceptor } from 'timeout.interceptor';
     {
       provide: APP_INTERCEPTOR,
       useClass: TimeOutInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
     },
   ],
 })

@@ -19,21 +19,21 @@ export class CartService {
 
   async addToCart(
     cartItem: { productId: string; quantity: number },
-    { user }: Req,
+    id: string,
   ): Promise<CartDocument> {
     const product = await this.productService.findProductByID(
       cartItem.productId,
     );
     if (!product)
       throw new NotFoundException('No product found with the provided ID!');
-    const cart = await this.cartRepo.getCartByUserId(user.id);
+    const cart = await this.cartRepo.getCartByUserId(id);
     if (!cart) {
       return this.cartRepo.createCart(
         {
           product: product,
           quantity: cartItem.quantity,
         },
-        user.id,
+        id,
       );
     }
     const index = cart.cartItems.findIndex(
@@ -41,7 +41,11 @@ export class CartService {
     );
     if (index !== -1) {
       cart.cartItems[index].quantity += cartItem.quantity;
-      return await this.cartRepo.updateCartItems(cart.id, cart.cartItems);
+      return await this.cartRepo.updateCartItems(
+        cart.id,
+        cart.cartItems,
+        await cart.calcTotalPrice(),
+      );
     }
     cart.cartItems.push({
       product: {
@@ -52,5 +56,9 @@ export class CartService {
       quantity: cartItem.quantity,
     });
     return cart.save();
+  }
+
+  async deleteCartByUserId(userId: string): Promise<void> {
+    this.cartRepo.deleteCartByUserId(userId);
   }
 }

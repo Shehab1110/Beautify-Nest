@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Post,
   Request,
@@ -10,7 +11,7 @@ import { CartService } from './cart.service';
 import { AddToCartDto } from './dtos/add-to-cart.dto';
 import { Req } from '../../request-interface';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { User } from 'src/users/user.schema';
+import { User } from 'src/users/user.decorator';
 
 @Controller('cart')
 @UseGuards(AuthGuard)
@@ -18,13 +19,18 @@ export class CartController {
   constructor(private readonly cartService: CartService) {}
 
   @Get('/my-cart')
-  async getCartByUserId(@Request() { user }: Req) {
-    return this.cartService.getCartByUserId(user.id);
+  async getCartByUserId(@User('id') id: string) {
+    return this.cartService.getCartByUserId(id);
   }
 
   @Post()
-  async addToMyCart(@Body() cartItem: AddToCartDto, @Request() req: Req) {
-    console.log('Adding to cart!');
-    return this.cartService.addToCart(cartItem, req);
+  async addToMyCart(@Body() cartItem: AddToCartDto, @User('id') id: string) {
+    return this.cartService.addToCart(cartItem, id);
+  }
+
+  @Delete()
+  async deleteCart(@User('id') id: string) {
+    console.log(id);
+    return this.cartService.deleteCartByUserId(id);
   }
 }

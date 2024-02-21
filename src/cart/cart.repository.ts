@@ -26,17 +26,28 @@ export class CartRepository {
     return this.cartModel.create({
       user: userId,
       cartItems,
+      totalPrice: cartItem.product.price * cartItem.quantity,
     });
   }
 
   async updateCartItems(
     cartId: string,
     cartItems: Array<CartItem>,
+    newTotalPrice: number,
   ): Promise<CartDocument> {
-    return this.cartModel
-      .findByIdAndUpdate(cartId, { cartItems }, { new: true })
+    return await this.cartModel
+      .findByIdAndUpdate(
+        cartId,
+        { cartItems, totalPrice: newTotalPrice },
+        { new: true },
+      )
       .lean();
   }
+
+  async deleteCartByUserId(userId: string): Promise<void> {
+    await this.cartModel.findOneAndDelete({ user: userId });
+  }
+
   // async updateCartItems(
   //   cart: CartDocument,
   //   cartItem: CartItems,

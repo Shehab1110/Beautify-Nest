@@ -14,12 +14,10 @@ export class Cart extends Document {
   totalPrice: number;
 
   async calcTotalPrice(): Promise<number> {
-    const cartItems: Array<{ product: Product; quantity: number }> = (
-      await this.populate('cartItems.product')
-    ).get('cartItems');
     let totalPrice = 0;
     for (let i = 0; i < this.cartItems.length; i++) {
-      totalPrice += cartItems[i].product.price;
+      const { product, quantity } = this.cartItems[i];
+      totalPrice += product.price * quantity;
     }
     return totalPrice;
   }
@@ -33,23 +31,20 @@ export const CartSchema = SchemaFactory.createForClass(Cart);
 
 CartSchema.index({ user: 1 }, { unique: true });
 
-// CartSchema.pre('find', function (next) {
-//   this.populate('cartItems.product');
-//   next();
-// });
-
 CartSchema.pre('save', async function (next) {
-  this.totalPrice = await this.calcTotalPrice();
+  let totalPrice = 0;
+  for (let i = 0; i < this.cartItems.length; i++) {
+    const { product, quantity } = this.cartItems[i];
+    totalPrice += product.price * quantity;
+  }
   next();
 });
 
 CartSchema.methods.calcTotalPrice = async function (): Promise<number> {
-  const cartItems: Array<{ product: Product; quantity: number }> = (
-    await this.populate('cartItems.product')
-  ).get('cartItems');
   let totalPrice = 0;
   for (let i = 0; i < this.cartItems.length; i++) {
-    totalPrice += cartItems[i].product.price;
+    const { product, quantity } = this.cartItems[i];
+    totalPrice += product.price * quantity;
   }
   return totalPrice;
 };

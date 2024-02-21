@@ -21,7 +21,6 @@ interface Req extends ExpressRequest {
 }
 
 @Controller('auth')
-@UseInterceptors(LoggingInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
