@@ -17,7 +17,7 @@ export class Cart extends Document {
     let totalPrice = 0;
     for (let i = 0; i < this.cartItems.length; i++) {
       const { product, quantity } = this.cartItems[i];
-      totalPrice += product.price * quantity;
+      totalPrice += product.price ?? 0 * quantity;
     }
     return totalPrice;
   }
@@ -35,7 +35,7 @@ CartSchema.pre('save', async function (next) {
   let totalPrice = 0;
   for (let i = 0; i < this.cartItems.length; i++) {
     const { product, quantity } = this.cartItems[i];
-    totalPrice += product.price * quantity;
+    totalPrice += product.price ?? 0 * quantity;
   }
   next();
 });
